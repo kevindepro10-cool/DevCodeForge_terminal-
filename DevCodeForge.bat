@@ -3,12 +3,17 @@ title DevCodeForge
 cls
 
 :menu
+cls
+color 7
 echo.
 echo  ============================================================
 echo   [*] DevCodeForge - IP Tool
 echo   [*] Version 0.0.2
+echo   [*] Entwickelt von DevCodeForge
+echo  ============================================================
 echo   [1] IP-Adresse orten       (IP eingeben - Standort)
 echo   [2] IP-Adresse finden      (Standort eingeben - IPs)
+echo   [3] zipwn
 echo   [/hilfe] Hilfe
 echo   [0] Beenden
 echo  ------------------------------------------------------------
@@ -18,6 +23,7 @@ set /p choice=" Auswahl: "
 if /i "%choice%"=="/hilfe" goto hilfe
 if "%choice%"=="1"         goto ip_orten
 if "%choice%"=="2"         goto standort_zu_ip
+if "%choice%"=="3"         goto zipwn
 if "%choice%"=="0"         goto exit
 
 echo.
@@ -148,6 +154,49 @@ echo.
 pause
 cls
 goto menu
+
+:zipwn
+cls
+@echo off
+title Zipwn
+color 3
+if not exist "C:\Program Files\7-Zip" (
+	echo 7-Zip not installed!
+	pause
+	exit
+)
+
+echo.
+set /p archive="Enter Archive: "
+if not exist "%archive%" (
+	echo Archive not found!
+	pause
+	goto menu
+)
+
+set /p wordlist="Enter Wordlist: "
+if not exist "%wordlist%" (
+	echo Wordlist not found!
+	pause
+	goto menu
+)
+echo Cracking...
+for /f %%a in (%wordlist%) do (
+	set pass=%%a
+	call :attempt
+)
+echo shitty wordlist dumbass
+pause
+goto menu
+
+:attempt
+"C:\Program Files\7-Zip\7z.exe" x -p%pass% "%archive%" -o"cracked" -y >nul 2>&1
+echo ATTEMPT : %pass%
+if /I %errorlevel% EQU 0 (
+	echo Success! Password Found: %pass%
+	pause
+	goto menu
+)
 
 :: ============================================================
 ::  BEENDEN
